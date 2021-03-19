@@ -6,7 +6,7 @@
 
 //*1.9.0 specific stuff*//
 
-#define BID									0x0E36C71C08334076
+#define BID									0x3F5E3459BE77E565
 #define MAINFILE_SIZE						8836448
 
 
