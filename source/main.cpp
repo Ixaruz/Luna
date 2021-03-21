@@ -230,8 +230,8 @@ Check Checker() {
     //dream check
     u32 dreamstrval;
     u16 IsDreamingBed = 0;
-    //[[[main+3D3AB18]+10]+130]+60
-    u64 mainAddr = util::FollowPointerMain(0x3D3AB18, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
+    //[[[main+3D96720]+10]+130]+60
+    u64 mainAddr = util::FollowPointerMain(0x3D96720, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
     dmntchtReadCheatProcessMemory(mainAddr, &dreamstrval, sizeof(u32));
     dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16));
 
