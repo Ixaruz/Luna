@@ -25,8 +25,8 @@ Result rc;
 void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*progress = 69;
 	*status = "optaining pointers...";
-	//[[[main+3D3AB18]+10]+F8]+60
-	u64 mainAddr = util::FollowPointerMain(0x3D3AB18, 0x10, 0xF8, 0xFFFFFFFFFFFFFFFF) + 0x60;
+	//[[[main+3D96720]+10]+130]+60
+	u64 mainAddr = util::FollowPointerMain(0x3D96720, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
 	if (mainAddr == 0x60) {
 		*status = "Error: mainAddr";
 		*progress = 0;
