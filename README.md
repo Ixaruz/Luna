@@ -60,6 +60,9 @@ If you like my work, please consider supporting me on Patreon, thanks!
 - If you want to go online with dumped dream towns and avoid error 2219-3003 ("Network temporarily unavailable"),
   use your own Island as a template (it should provide proper Netplay information).
 
+## Contact
+Discord: Poyo#0777
+
 ## Credits
 - **WerWolv** for libtesla and coding help.
 - **J-D-K** for JKSV, which was used for testing and also part of its code was used for file handling.
