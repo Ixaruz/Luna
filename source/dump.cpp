@@ -32,8 +32,8 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		*progress = 0;
 		return;
 	}
-	//[[[[main+3D3AB18]+10]+108]+08]
-	u64 playerAddr = util::FollowPointerMain(0x3D3AB18, 0x10, 0x108, 0x08, 0xFFFFFFFFFFFFFFFF);
+	//[[[[main+3D96720]+10]+140]+08]
+	u64 playerAddr = util::FollowPointerMain(0x3D3AB18, 0x10, 0x140, 0x08, 0xFFFFFFFFFFFFFFFF);
 	if (playerAddr == 0x00) {
 		*status = "Error: playerAddr";
 		*progress = 0;
