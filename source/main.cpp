@@ -73,8 +73,8 @@ public:
     }
 
     // Called once every frame to handle inputs not handled by other UI elements
-    virtual bool handleInput(u64 keysDown, u64 keysHeld, touchPosition touchInput, JoystickPosition leftJoyStick, JoystickPosition rightJoyStick) override {
-        return false;   // Return true here to singal the inputs have been consumed
+    virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState& touchPos, HidAnalogStickState joyStickPosLeft, HidAnalogStickState joyStickPosRight) {
+        return false;   // Return true here to signal the inputs have been consumed
     }
 
 private:
@@ -127,7 +127,7 @@ public:
     }
 
     // Called once every frame to handle inputs not handled by other UI elements
-    virtual bool handleInput(u64 keysDown, u64 keysHeld, touchPosition touchInput, JoystickPosition leftJoyStick, JoystickPosition rightJoyStick) override {
+    virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState& touchPos, HidAnalogStickState joyStickPosLeft, HidAnalogStickState joyStickPosRight) {
         return false;   // Return true here to signal the inputs have been consumed
     }
 };
@@ -200,7 +200,7 @@ CheckResult CheckTemplateFiles(FsFileSystem* fs, const std::string& path) {
             fsFsOpenFile(fs, pathbuffer, FsOpenMode_Read, &check);
             fsFileRead(&check, 0, &checkDAT, 0x10, FsReadOption_None, &bytesread);
             if (checkDAT.SaveRevision != REVISION_SAVE || checkDAT.Major != REVISION_MAJOR || checkDAT.Minor != REVISION_MINOR) {
-                fatalThrow(checkDAT.Major);
+                //fatalThrow(checkDAT.Major);
                 return CheckResult::WrongRevision;
             }
         }
@@ -229,8 +229,8 @@ Check Checker() {
     //dream check
     u32 dreamstrval;
     u16 IsDreamingBed = 0;
-    //[[[main+3D1AA60]+10]+F8]+60
-    u64 mainAddr = util::FollowPointerMain(0x3D1AA60, 0x10, 0xF8, 0xFFFFFFFFFFFFFFFF) + 0x60;
+    //[[[main+3D96720]+10]+130]+60
+    u64 mainAddr = util::FollowPointerMain(0x3D96720, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
     dmntchtReadCheatProcessMemory(mainAddr, &dreamstrval, sizeof(u32));
     dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16));
 
@@ -279,8 +279,7 @@ Check Checker() {
                     else if (templatefiles == CheckResult::WrongRevision) {
                         warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
                             renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
-                            renderer->drawString("Either wrong save revision,", false, 60, 340, 25, renderer->a(0xFFFF));
-                            renderer->drawString("or template is encrypted.", false, 65, 375, 25, renderer->a(0xFFFF));
+                            renderer->drawString("Wrong save revision.", false, 70, 340, 25, renderer->a(0xFFFF));
                             });
 
                         checkvar.check_result = templatefiles;
