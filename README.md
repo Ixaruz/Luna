@@ -61,7 +61,7 @@ If you like my work, please consider supporting me on Patreon, thanks!
   use your own Island as a template (it should provide proper Netplay information).
 
 ## Contact
-Discord: Poyo#0777
+Discord: Poyo#0828
 
 ## Credits
 - **WerWolv** for libtesla and coding help.
