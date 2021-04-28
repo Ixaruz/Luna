@@ -4,10 +4,11 @@
 
 #define TID									0x01006F8002326000
 
-//*1.7.0 specific stuff*//
+//*1.9.0 specific stuff*//
 
 #define BID									0x3F5E3459BE77E565
 #define MAINFILE_SIZE						8836448
+
 
 #define REVISION_MAJOR						0x7C001
 #define REVISION_MINOR						0x7C006

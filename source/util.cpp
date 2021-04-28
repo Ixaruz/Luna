@@ -23,8 +23,7 @@ extern const u64 houseSize = 0x26400;
 extern const u64 houseLvlOffset = 0x308bd4; //changed in 1.9.0
 extern const u64 EventFlagOffset = 0x22d9a8; //changed in 1.9.0
 
-static const char verboten[] = { ',', '/', '\\', '<', '>', ':', '"', '|', '?', '*', '™', '©', '®' };
-
+static const char verboten[] = { ',', '/', '\\', '<', '>', ':', '"', '|', '?', '*', 'â„¢', 'Â©', 'Â®' };
 static bool isVerboten(const u16& t)
 {
     for (unsigned i = 0; i < 13; i++)
