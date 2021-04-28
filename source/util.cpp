@@ -2,8 +2,8 @@
 
 extern const s64 SaveHeaderSize = 0x110;
 
-extern const u64 mainSize = 0x527990; //changed in 1.9.0 // GSaveLandOther - Header
-extern const u64 GSavePlayerVillagerAccountOffset = 0x1E2280 - 0x110;
+extern const u64 mainSize = 0x5279A0; //changed in 1.10.0 // GSaveLandOther - Header
+extern const u64 GSavePlayerVillagerAccountOffset = 0x1E2290 - 0x110; //changed in 1.10.0
 extern const u64 GSavePlayerVillagerAccountSize = 0x48;
 extern const u64 DreamIDOffset = 0x5264D8; //changed in 1.9.0
 extern const u64 DreamInfoSize = 0x50;
@@ -20,10 +20,11 @@ extern const u64 Pocket2SizeOffset = 0x36B00; //absolute file offset //changed i
 
 //*main.dat*//
 extern const u64 houseSize = 0x26400;
-extern const u64 houseLvlOffset = 0x308bd4; //changed in 1.9.0
-extern const u64 EventFlagOffset = 0x22d9a8; //changed in 1.9.0
+extern const u64 houseLvlOffset = 0x308be4; //changed in 1.10.0
+extern const u64 EventFlagOffset = 0x22d9b8; //changed in 1.10.0
 
-static const char verboten[] = { ',', '/', '\\', '<', '>', ':', '"', '|', '?', '*', 'â„¢', 'Â©', 'Â®' };
+static const char verboten[] = { ',', '/', '\\', '<', '>', ':', '"', '|', '?', '*', '™', '©', '®' };
+
 static bool isVerboten(const u16& t)
 {
     for (unsigned i = 0; i < 13; i++)

@@ -73,7 +73,7 @@ public:
     }
 
     // Called once every frame to handle inputs not handled by other UI elements
-    virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState &touchPos, HidAnalogStickState joyStickPosLeft, HidAnalogStickState joyStickPosRight) {
+    virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState& touchPos, HidAnalogStickState joyStickPosLeft, HidAnalogStickState joyStickPosRight) {
         return false;   // Return true here to signal the inputs have been consumed
     }
 
@@ -127,10 +127,9 @@ public:
     }
 
     // Called once every frame to handle inputs not handled by other UI elements
-    virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState &touchPos, HidAnalogStickState joyStickPosLeft, HidAnalogStickState joyStickPosRight) {
+    virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState& touchPos, HidAnalogStickState joyStickPosLeft, HidAnalogStickState joyStickPosRight) {
         return false;   // Return true here to signal the inputs have been consumed
     }
-
 };
 
 class GuiError : public tsl::Gui {
@@ -230,8 +229,8 @@ Check Checker() {
     //dream check
     u32 dreamstrval;
     u16 IsDreamingBed = 0;
-    //[[[main+3D96720]+10]+130]+60
-    u64 mainAddr = util::FollowPointerMain(0x3D96720, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
+    //[[[main+3DCC9E8]+10]+130]+60
+    u64 mainAddr = util::FollowPointerMain(0x3DCC9E8, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
     dmntchtReadCheatProcessMemory(mainAddr, &dreamstrval, sizeof(u32));
     dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16));
 
@@ -280,8 +279,7 @@ Check Checker() {
                     else if (templatefiles == CheckResult::WrongRevision) {
                         warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
                             renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
-                            renderer->drawString("Either wrong save revision,", false, 60, 340, 25, renderer->a(0xFFFF));
-                            renderer->drawString("or template is encrypted.", false, 65, 375, 25, renderer->a(0xFFFF));
+                            renderer->drawString("Wrong save revision.", false, 70, 340, 25, renderer->a(0xFFFF));
                             });
 
                         checkvar.check_result = templatefiles;

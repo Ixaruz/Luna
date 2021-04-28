@@ -4,20 +4,19 @@
 
 #define TID									0x01006F8002326000
 
-//*1.9.0 specific stuff*//
+//*1.10.0 specific stuff*//
 
-#define BID									0x3F5E3459BE77E565
-#define MAINFILE_SIZE						8836448
+#define BID									0x8379D9E90FF19B0F
+#define MAINFILE_SIZE						8836464
 
-
-#define REVISION_MAJOR						0x7C001
-#define REVISION_MINOR						0x7C006
-#define REVISION_SAVE						18
+#define REVISION_MAJOR						0x7D001
+#define REVISION_MINOR						0x7D004
+#define REVISION_SAVE						19
 
 //**********************//
 
 #define MAJOR_VERSION						0
-#define MINOR_VERSION						3
+#define MINOR_VERSION						4
 #define REVISION_VERSION					0
 #define STRINGIFY(x)						#x
 #define TOSTRING(x)							STRINGIFY(x)

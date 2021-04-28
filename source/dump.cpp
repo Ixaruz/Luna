@@ -25,15 +25,15 @@ Result rc;
 void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*progress = 69;
 	*status = "optaining pointers...";
-	//[[[main+3D96720]+10]+130]+60
-	u64 mainAddr = util::FollowPointerMain(0x3D96720, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
+	//[[[main+3DCC9E8]+10]+130]+60
+	u64 mainAddr = util::FollowPointerMain(0x3DCC9E8, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
 	if (mainAddr == 0x60) {
 		*status = "Error: mainAddr";
 		*progress = 0;
 		return;
 	}
-	//[[[[main+3D96720]+10]+140]+08]
-	u64 playerAddr = util::FollowPointerMain(0x3D96720, 0x10, 0x140, 0x08, 0xFFFFFFFFFFFFFFFF);
+	//[[[[main+3DCC9E8]+10]+140]+08]
+	u64 playerAddr = util::FollowPointerMain(0x3DCC9E8, 0x10, 0x140, 0x08, 0xFFFFFFFFFFFFFFFF);
 	if (playerAddr == 0x00) {
 		*status = "Error: playerAddr";
 		*progress = 0;
@@ -132,17 +132,14 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 #endif
 	}
-	u16 IsDreamingBed = 0; //346
-	u16 TapDreamEnable = 1; //354
-	u16 EnableMyDream = 0; //362
-	u16 DreamUploadPlayerHaveCreatorID = 0; //364
+	u16 IsDreamingBed = 0;
+	u16 TapDreamEnable = 1;
+	u16 DreamUploadPlayerHaveCreatorID = 0;
 
 	//removes the dream bed and gyroid on Plaza
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16), FsWriteOption_Flush);
 	//should allow you to dream without introduction to it etc
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (354 * 2), &TapDreamEnable, sizeof(u16), FsWriteOption_Flush);
-	//removes link to dream town
-	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (362 * 2), &EnableMyDream, sizeof(u16), FsWriteOption_Flush);
 	//removes panel
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (364 * 2), &DreamUploadPlayerHaveCreatorID, sizeof(u16), FsWriteOption_Flush);
 
