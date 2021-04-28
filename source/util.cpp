@@ -5,7 +5,7 @@ extern const s64 SaveHeaderSize = 0x110;
 extern const u64 mainSize = 0x5279A0; //changed in 1.10.0 // GSaveLandOther - Header
 extern const u64 GSavePlayerVillagerAccountOffset = 0x1E2290 - 0x110; //changed in 1.10.0
 extern const u64 GSavePlayerVillagerAccountSize = 0x48;
-extern const u64 DreamIDOffset = 0x5264D8; //changed in 1.9.0
+extern const u64 DreamIDOffset = 0x5264E8; //changed in 1.10.0
 extern const u64 DreamInfoSize = 0x50;
 
 
