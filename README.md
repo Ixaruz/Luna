@@ -50,15 +50,16 @@ If you like my work, please consider supporting me on Patreon, thanks!
 
 ## Building
 1. Requires [devkitPro](https://devkitpro.org/) and [libnx](https://github.com/switchbrew/libnx)
-2. Requires switch-freetype, zlib
+2. Requires switch-freetype
 ## Known Issues
 
 - Non-ASCII island names can't be saved (e.g. Japanese/Chinese/Korean/Russian, basically every language that doesnt use the roman alphabet.)
   this is due to Nintendo Switch handling file paths in Shift JIS (basically utf8), which doesn't include non-ASCII characters.
   I wont be able to fix this. Currently Luna just doesn't include the island name in the path, if its invalid, you can still dump foreign islands, duh.
 
-- If you want to go online with dumped dream towns and avoid error 2219-3003 ("Network temporarily unavailable"),
-  use your own Island as a template (it should provide proper Netplay information).
+- ~~- If you want to go online with dumped dream towns and avoid error 2219-3003 ("Network temporarily unavailable"),
+  use your own Island as a template (it should provide proper Netplay information).~~ 
+  __currently doesn't work either way.__
 
 ## Contact
 Discord: Poyo#0828
