@@ -25,13 +25,14 @@ std::thread dump;
 class GuiDump : public tsl::Gui {
 public:
     //ctor
-    GuiDump() { }
+    GuiDump(tsl::Overlay* ovlmaster) { this->mamaoverlay = ovlmaster; }
 
     //dtor
     ~GuiDump() {
 #if !DEBUG_UI
         dump.join();
 #endif
+        this->mamaoverlay->close();
         isRunning = false;
     }
 
@@ -78,6 +79,7 @@ public:
     }
 
 private:
+    tsl::Overlay *mamaoverlay = nullptr;
     tsl::elm::ProgressBar *m_progressBar = nullptr;
     u8 progress = 0;
     u8 tem = 0;
@@ -87,7 +89,7 @@ private:
 
 class SelectionGui : public tsl::Gui {
 public:
-    SelectionGui() { }
+    SelectionGui(tsl::Overlay* ovlmaster) { this->papaoverlay = ovlmaster; }
 
     // Called when this Gui gets loaded to create the UI
     // Allocate all elements on the heap. libtesla will make sure to clean them up when not needed anymore
@@ -103,9 +105,9 @@ public:
         list->addItem(new tsl::elm::CategoryHeader("Dump Options"));
 
         auto* clickableListItem = new tsl::elm::ListItem("Dump Dream Island", "...");
-        clickableListItem->setClickListener([](u64 keys) {
+        clickableListItem->setClickListener([this](u64 keys) {
             if (keys & KEY_A) {
-                tsl::changeTo<GuiDump>();
+                tsl::changeTo<GuiDump>(this->papaoverlay);
                 return true;
             }
 
@@ -123,13 +125,15 @@ public:
 
     // Called once every frame to update values
     virtual void update() override {
-
     }
 
     // Called once every frame to handle inputs not handled by other UI elements
     virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState &touchPos, HidAnalogStickState joyStickPosLeft, HidAnalogStickState joyStickPosRight) {
         return false;   // Return true here to signal the inputs have been consumed
     }
+
+private:
+    tsl::Overlay *papaoverlay = nullptr;
 };
 
 class GuiError : public tsl::Gui {
@@ -155,6 +159,7 @@ enum class CheckResult {
     NoDream,
     NoTemplate,
     WrongRevision,
+    NotEnoughPlayers,
 };
 
 struct Check {
@@ -175,8 +180,10 @@ CheckResult CheckTemplateFiles(FsFileSystem* fs, const std::string& path) {
     }
     for (unsigned i = 0; i < listcount; i++)
     {
+        /*
         if (fs::pathIsFiltered(path + list.getItem(i)))
             continue;
+        */
 
         //skip over landname.dat
         if (list.getItem(i) == "landname.dat")
@@ -256,12 +263,46 @@ Check Checker() {
                 FsFileSystem fsSdmc;
                 fsdevMountSdmc();
                 fsOpenSdCardFileSystem(&fsSdmc);
-
+                /*
                 for (u8 i = 1; i < 8; i++) {
-                    fs::addPathFilter("/config/luna/template/Villager" + std::to_string(i));
+                    fs::addPathFilter(LUNA_TEMPLATE_DIR + "Villager" + std::to_string(i));
                 }
+                */
                 CheckResult templatefiles = CheckTemplateFiles(&fsSdmc, LUNA_TEMPLATE_DIR);
-                fs::freePathFilters();
+                //fs::freePathFilters();
+
+                //player check
+                if (templatefiles == CheckResult::Success && dreamstrval != 0x0 && IsDreamingBed != 0x0) {
+                    std::vector<bool> players(0x8, false);
+                    static std::string playernumbers = "";
+                    static char stringbuffer[0x100] = { 0 };
+                    for (u8 i = 0; i < 8; i++) {
+                        u64 offset = i * GSavePlayerVillagerAccountSize;
+                        u128 AccountUID = 0;
+                        dmntchtReadCheatProcessMemory(mainAddr + GSavePlayerVillagerAccountOffset + offset, &AccountUID, 0x10);
+                        if (AccountUID != 0) {
+                            if (access(std::string("/config/luna/template/Villager" + std::to_string(i)).c_str(), F_OK) == -1)
+                                templatefiles = CheckResult::NotEnoughPlayers;
+                            players[i] = true;
+                            playernumbers.append((playernumbers.empty() ? "" : ", ") + std::to_string(i));
+                        }
+                    }
+                    std::snprintf(stringbuffer, 0x100, std::string("Villager" + playernumbers).c_str());
+
+                    if (templatefiles == CheckResult::NotEnoughPlayers) {
+                        warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
+                            renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
+                            renderer->drawString("template needs to include", false, 60, 340, 25, renderer->a(0xFFFF));
+                            renderer->drawString(stringbuffer, false, 60, 375, 25, renderer->a(0xF06F));
+                            });
+
+                        checkvar.check_result = templatefiles;
+                        checkvar.elm = warning;
+                        fsFsClose(&fsSdmc);
+                        fsdevUnmountDevice("sdmc");
+                        return checkvar;
+                    }
+                }
 
                 if (templatefiles != CheckResult::Success) {
                     if (templatefiles == CheckResult::NoTemplate) {
@@ -354,8 +395,8 @@ public:
         
         //create file struct if not found
         tsl::hlp::doWithSDCardHandle([]{
-            if (access("/config/luna", F_OK) == -1) {
-                mkdir("/config/luna", 0777);
+            if (access(LUNA_DIR, F_OK) == -1) {
+                mkdir(LUNA_DIR, 0777);
             }
             if (access("/config/luna/dump", F_OK) == -1) {
                 mkdir("/config/luna/dump", 0777);
@@ -367,7 +408,7 @@ public:
         });
 
         Check cr = Checker();
-        if (cr.check_result == CheckResult::Success) return initially<SelectionGui>();
+        if (cr.check_result == CheckResult::Success) return initially<SelectionGui>(this);
         else return initially<GuiError>(cr.elm);
     }
 };

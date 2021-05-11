@@ -9,7 +9,7 @@ extern const u64 DreamIDOffset = 0x5264E8; //changed in 1.10.0
 extern const u64 DreamInfoSize = 0x50;
 
 
-extern const u64 playerSize = 0x36930;
+extern const u64 playerSize = 0x36940;
 extern const u64 playersOffset = 0x7A970; //changed in 1.9.0
 
 //taken from NHSE

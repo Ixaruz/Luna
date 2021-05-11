@@ -93,7 +93,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	}
 	newdumppath += "/" + std::string(dreamtime);
 	mkdir(newdumppath.c_str(), 0777);
-	for (u8 i = 1; i < 8; i++) {
+	for (u8 i = 0; i < 8; i++) {
 		fs::addPathFilter("/config/luna/template/Villager" + std::to_string(i));
 	}
 	//copy template to new directory recursively
@@ -104,8 +104,28 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*status = "finished copying template";
 	size_t bufferSize = BUFF_SIZE;
 	u8 *buffer = new u8[bufferSize];
-	//opening main write
 	std::snprintf(pathBuffer, FS_MAX_PATH, std::string(newdumppath + "/main.dat").c_str());
+	//opening main read
+	rc = fsFsOpenFile(&fsSdmc, pathBuffer, FsOpenMode_Read, &main);
+	if (R_FAILED(rc)) {
+		*progress = 0;
+		*status = "Error: opening main file";
+		fsFileClose(&main);
+		fsFsClose(&fsSdmc);
+		fsdevUnmountDevice("sdmc");
+		return;
+	}
+	//read AccountUID linkage (for Nintendo Switch Online)
+	size_t AccountTableSize = 0x10 + (8 * 0x48); //0x250
+	u8* SavePlayerVillagerAccountTableBuffer = new u8[AccountTableSize]; //0x250
+	u64 AccountTableOffset = 0x10;
+	u64 bytesread;
+	fsFileRead(&main, SaveHeaderSize + GSavePlayerVillagerAccountOffset - AccountTableOffset, SavePlayerVillagerAccountTableBuffer, AccountTableSize, FsReadOption_None, &bytesread);
+
+	//done reading main
+	fsFileClose(&main);
+
+	//opening main write
 	rc = fsFsOpenFile(&fsSdmc, pathBuffer, FsOpenMode_Write, &main);
 	if (R_FAILED(rc)) {
 		*progress = 0;
@@ -133,7 +153,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 #endif
 	}
 	u16 IsDreamingBed = 0; //346
-	u16 TapDreamEnable = 0; //354
+	u16 TapDreamEnable = 1; //354
 	u16 EnableMyDream = 0; //362
 	u16 DreamUploadPlayerHaveCreatorID = 0; //364
 
@@ -145,6 +165,14 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (362 * 2), &EnableMyDream, sizeof(u16), FsWriteOption_Flush);
 	//removes panel
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (364 * 2), &DreamUploadPlayerHaveCreatorID, sizeof(u16), FsWriteOption_Flush);
+
+	//write AccountUID linkage (for Nintendo Switch Online)
+	fsFileWrite(&main, SaveHeaderSize + GSavePlayerVillagerAccountOffset - AccountTableOffset, SavePlayerVillagerAccountTableBuffer, 0x10, FsWriteOption_Flush);
+	for (u8 i = 0; i < 8; i++) {
+		if (players[i]) {
+			fsFileWrite(&main, SaveHeaderSize + GSavePlayerVillagerAccountOffset + (i * 0x48), SavePlayerVillagerAccountTableBuffer + 0x10 + (i * 0x48), 0x10, FsWriteOption_Flush);
+		}
+	}
 
 	//remove DreamInfo in dumped file
 	u8 DreamInfoBuffer[DreamInfoSize] = { 0 };
@@ -196,12 +224,19 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		*status = currentplayer.c_str();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 #endif
+		//disabling this due to issues with NetPlayInfo on per-player basis
 		//copy the original villager for the existing villagers
+		/*
 		if (i != 0) {
 			mkdir(currentplayer.c_str(), 0777);
 			fs::copyDirToDir(&fsSdmc, Villager0, currentplayer, logelm);
 			(*logelm)->addLine("finished copying player template Villager" + std::to_string(i) + ".");
 		}
+		*/
+		//new implementation 
+		mkdir(currentplayer.c_str(), 0777);
+		fs::copyDirToDir(&fsSdmc, "/config/luna/template/" + player, currentplayer, logelm);
+		(*logelm)->addLine("finished copying player template Villager" + std::to_string(i) + ".");
 		//reset size in-case it got changed in the latter for loop
 		bufferSize = BUFF_SIZE;
 		//clear our path buffer or bad things will happen
