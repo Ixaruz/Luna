@@ -57,9 +57,8 @@ If you like my work, please consider supporting me on Patreon, thanks!
   this is due to Nintendo Switch handling file paths in Shift JIS (basically utf8), which doesn't include non-ASCII characters.
   I wont be able to fix this. Currently Luna just doesn't include the island name in the path, if its invalid, you can still dump foreign islands, duh.
 
-- ~~- If you want to go online with dumped dream towns and avoid error 2219-3003 ("Network temporarily unavailable"),
-  use your own Island as a template (it should provide proper Netplay information).~~ 
-  __currently doesn't work either way.__
+- If you want to go online with dumped dream towns and avoid error 2219-3003 ("Network temporarily unavailable"),
+  check this [release](https://github.com/Ixaruz/Luna/releases/tag/0.4.1).
 
 ## Contact
 Discord: Poyo#0828
