@@ -49,8 +49,8 @@ If you like my work, please consider supporting me on Patreon, thanks!
 8. Profit. 
 
 ## Building
-1. Requires [devkitPro](https://devkitpro.org/) and [libnx](https://github.com/switchbrew/libnx)
-2. Requires switch-freetype
+1. Requires [devkitPro](https://devkitpro.org/)
+2. Requires switch-dev, switch-freetype
 ## Known Issues
 
 - Non-ASCII island names can't be saved (e.g. Japanese/Chinese/Korean/Russian, basically every language that doesnt use the roman alphabet.)
