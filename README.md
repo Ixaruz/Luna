@@ -50,7 +50,7 @@ If you like my work, please consider supporting me on Patreon, thanks!
 
 ## Building
 1. Requires [devkitPro](https://devkitpro.org/)
-2. Requires switch-dev, switch-freetype
+2. Requires switch-dev, switch-freetype, switch-zlib
 ## Known Issues
 
 - Non-ASCII island names can't be saved (e.g. Japanese/Chinese/Korean/Russian, basically every language that doesnt use the roman alphabet.)
