@@ -25,15 +25,15 @@ Result rc;
 void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	*progress = 69;
 	*status = "optaining pointers...";
-	//[[[main+3DCC9E8]+10]+130]+60
-	u64 mainAddr = util::FollowPointerMain(0x3DCC9E8, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
+	//[[[main+3DFD1D8]+10]+130]+60
+	u64 mainAddr = util::FollowPointerMain(0x3DFD1D8, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
 	if (mainAddr == 0x60) {
 		*status = "Error: mainAddr";
 		*progress = 0;
 		return;
 	}
-	//[[[[main+3DCC9E8]+10]+140]+08]
-	u64 playerAddr = util::FollowPointerMain(0x3DCC9E8, 0x10, 0x140, 0x08, 0xFFFFFFFFFFFFFFFF);
+	//[[[[main+3DFD1D8]+10]+140]+08]
+	u64 playerAddr = util::FollowPointerMain(0x3DFD1D8, 0x10, 0x140, 0x08, 0xFFFFFFFFFFFFFFFF);
 	if (playerAddr == 0x00) {
 		*status = "Error: playerAddr";
 		*progress = 0;

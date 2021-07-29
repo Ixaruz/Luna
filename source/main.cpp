@@ -106,7 +106,7 @@ public:
 
         auto* clickableListItem = new tsl::elm::ListItem("Dump Dream Island", "...");
         clickableListItem->setClickListener([this](u64 keys) {
-            if (keys & KEY_A) {
+            if (keys & HidNpadButton_A) {
                 tsl::changeTo<GuiDump>(this->papaoverlay);
                 return true;
             }
@@ -236,8 +236,8 @@ Check Checker() {
     //dream check
     u32 dreamstrval;
     u16 IsDreamingBed = 0;
-    //[[[main+3DCC9E8]+10]+130]+60
-    u64 mainAddr = util::FollowPointerMain(0x3DCC9E8, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
+    //[[[main+3DFD1D8]+10]+130]+60
+    u64 mainAddr = util::FollowPointerMain(0x3DFD1D8, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
     dmntchtReadCheatProcessMemory(mainAddr, &dreamstrval, sizeof(u32));
     dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16));
 
