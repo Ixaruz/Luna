@@ -28,7 +28,7 @@ If you like my work, please consider supporting me on Patreon, thanks!
     │   │   └── ...   
     │   └── /template/                                  # folder for user provided template.
     │       ├── /VillagerX/                             # variable amount of players,  0 <= X < 8; 
-    │       │   ├── /personal.dat                       # only Villager0 will be used to copy
+    │       │   ├── /personal.dat
     │       │   ├── /photo_studio_island.dat
     │       │   ├── /postbox.dat
     │       │   └── /profile.dat
