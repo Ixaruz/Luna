@@ -1,14 +1,6 @@
 # Luna
 An Animal Crossing New Horizons tool to dump Dream Islands.
 
-## Supporting
-
-If you like my work, please consider supporting me on Patreon, thanks!
-
-<p align="center">
-<a href="https://www.patreon.com/Ixarus"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Patreon donate button" /> </a>
-</p>
-
 ## SD file structure
 
     SDMC
@@ -58,10 +50,18 @@ If you like my work, please consider supporting me on Patreon, thanks!
   I wont be able to fix this. Currently Luna just doesn't include the island name in the path, if its invalid, you can still dump foreign islands, duh.
 
 - If you want to go online with dumped dream towns and avoid error 2219-3003 ("Network temporarily unavailable"),
-  check this [release](https://github.com/Ixaruz/Luna/releases/tag/0.4.1).
+  use your own save file as a template.
 
 ## Contact
 Discord: Poyo#0828
+
+## Supporting
+
+If you like my work, please consider supporting me on Patreon, thanks!
+
+<p align="center">
+<a href="https://www.patreon.com/Ixarus"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Patreon donate button" /> </a>
+</p>
 
 ## Credits
 - **WerWolv** for libtesla and coding help.
