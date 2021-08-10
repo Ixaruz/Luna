@@ -7,6 +7,7 @@
 //*1.11.1 specific stuff*//
 
 #define BID									0x1CD4B05D52E20EAA
+#define BID_LAST							0x2768322A8F2F45F1
 #define MAINFILE_SIZE						8836464
 
 #define REVISION_MAJOR						0x7E001

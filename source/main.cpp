@@ -244,7 +244,7 @@ Check Checker() {
     dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16));
 
     if (isACNH) {
-        if (bid != BID) {
+        if (bid != BID && bid != BID_LAST) {
 
             std::snprintf(ret, 100, "BID 0x%016lX", bid);
             const char* description = ret;
