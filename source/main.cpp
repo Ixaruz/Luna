@@ -5,6 +5,7 @@
 #include "luna.h"
 
 static char ret[100];
+static char ret2[100];
 static bool isRunning = false;
 static bool checkedFiles = false;
 
@@ -167,9 +168,10 @@ struct Check {
     tsl::elm::Element* elm;
 };
 
+static FileHeaderInfo checkDAT = { 0 };
+
 CheckResult CheckTemplateFiles(FsFileSystem* fs, const std::string& path) {
     FsFile check;
-    FileHeaderInfo checkDAT = { 0 };
     u64 bytesread;
 
     fs::dirList list(path);
@@ -206,7 +208,7 @@ CheckResult CheckTemplateFiles(FsFileSystem* fs, const std::string& path) {
             std::snprintf(pathbuffer, FS_MAX_PATH, tobechecked.c_str());
             fsFsOpenFile(fs, pathbuffer, FsOpenMode_Read, &check);
             fsFileRead(&check, 0, &checkDAT, 0x10, FsReadOption_None, &bytesread);
-            if (checkDAT.SaveRevision != REVISION_SAVE || checkDAT.Major != REVISION_MAJOR || checkDAT.Minor != REVISION_MINOR) {
+            if (!(checkDAT.SaveRevision <= REVISION_SAVE && checkDAT.SaveRevision >= REVISION_SAVE_LAST) || checkDAT.Major != REVISION_MAJOR || checkDAT.Minor != REVISION_MINOR) {
                 //fatalThrow(checkDAT.Major);
                 return CheckResult::WrongRevision;
             }
@@ -236,8 +238,8 @@ Check Checker() {
     //dream check
     u32 dreamstrval;
     u16 IsDreamingBed = 0;
-    //[[[main+3DFD1D8]+10]+130]+60
-    u64 mainAddr = util::FollowPointerMain(0x3DFD1D8, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
+    //[[[main+3DFE1D8]+10]+130]+60
+    u64 mainAddr = util::FollowPointerMain(0x3DFE1D8, 0x10, 0x130, 0xFFFFFFFFFFFFFFFF) + 0x60;
     dmntchtReadCheatProcessMemory(mainAddr, &dreamstrval, sizeof(u32));
     dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16));
 
@@ -318,10 +320,15 @@ Check Checker() {
                         return checkvar;
                     }
                     else if (templatefiles == CheckResult::WrongRevision) {
-                        warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
+                        std::snprintf(ret, 100, "M = 0x%4X, m = 0x%4X", checkDAT.Major, checkDAT.Minor);
+                        const char* description1 = ret;
+                        std::snprintf(ret2, 100, "Revision = %2u", checkDAT.SaveRevision);
+                        const char* description2 = ret2;
+                        warning = new tsl::elm::CustomDrawer([description1, description2](tsl::gfx::Renderer* renderer, s32 x, s32 y, s32 w, s32 h) {
                             renderer->drawString("\uE150", false, 180, 250, 90, renderer->a(0xFFFF));
-                            renderer->drawString("Either wrong save revision,", false, 60, 340, 25, renderer->a(0xFFFF));
-                            renderer->drawString("or template is encrypted.", false, 65, 375, 25, renderer->a(0xFFFF));
+                            renderer->drawString("wrong save revision.", false, 90, 340, 25, renderer->a(0xFFFF));
+                            renderer->drawString(description1, false, 50, 375, 25, renderer->a(0xFFFF));
+                            renderer->drawString(description2, false, 50, 410, 25, renderer->a(0xFFFF));
                             });
 
                         checkvar.check_result = templatefiles;
