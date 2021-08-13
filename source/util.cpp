@@ -3,7 +3,7 @@
 extern const s64 SaveHeaderSize = 0x110;
 
 extern const u64 mainSize = 0x5279A0; //changed in 1.10.0 // GSaveLandOther - Header
-extern const u64 GSavePlayerVillagerAccountOffset = 0x1E2290 - 0x110; //changed in 1.10.0
+extern const u64 GSavePlayerVillagerAccountOffset = 0x1E2290 - SaveHeaderSize; //changed in 1.10.0
 extern const u64 GSavePlayerVillagerAccountSize = 0x48;
 extern const u64 DreamIDOffset = 0x5264E8; //changed in 1.10.0
 extern const u64 DreamInfoSize = 0x50;
@@ -15,8 +15,12 @@ extern const u64 playersOffset = 0x7A970; //changed in 1.9.0
 //taken from NHSE
 //*personal.dat*//
 extern const u64 PersonalID = 0xAFA8;
-extern const u64 StorageSizeOffset = 0x4081C; //absolute file offset //changed in 1.7.0
-extern const u64 Pocket2SizeOffset = 0x36B00; //absolute file offset //changed in 1.7.0
+extern const u64 EventFlagsPlayerOffset = 0xAFE0;
+extern const u64 PlayerOtherOffset = 0x36a50 - SaveHeaderSize; //0x36940
+extern const u64 ItemCollectBitOffset = 0xA058;
+extern const u64 StorageSizeOffset = PlayerOtherOffset + SaveHeaderSize + 0x18C + (8 * 5000); //absolute file offset //changed in 1.7.0 0x4081C
+extern const u64 Pocket1SizeOffset = PlayerOtherOffset + SaveHeaderSize + 0x10 + (8 * 20); //absolute file offset //changed in 1.7.0 0x36B00
+extern const u64 ExpandBaggageOffset = 0x36BD8;
 
 //*main.dat*//
 extern const u64 houseSize = 0x26400;

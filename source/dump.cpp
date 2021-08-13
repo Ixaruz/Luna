@@ -77,11 +77,6 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 
 	(*logelm)->addLine("DA-" + util::getDreamAddrString(mainAddr));
 
-#if DEBUG
-	*status = dumptime;
-	std::this_thread::sleep_for(std::chrono::seconds(2));
-#endif
-
 	std::string newdumppath = "/config/luna/dump/[DA-" + util::getDreamAddrString(mainAddr) + "]";
 	std::string strislandname = util::getIslandNameASCII(playerAddr);
 	if (!strislandname.empty()) newdumppath += " " + strislandname;
@@ -146,8 +141,8 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		dmntchtReadCheatProcessMemory(mainAddr + offset, buffer, bufferSize);
 		rc = fsFileWrite(&main, SaveHeaderSize + offset, buffer, bufferSize, FsWriteOption_Flush);
 #if DEBUG
-		char out[sizeof(Result)];
-		snprintf(out, sizeof(Result), "%u", rc);
+		char out[sizeof(Result) + 13];
+		snprintf(out, sizeof(Result) + 13, "fsFileWrite: %u", rc);
 		*status = (const char*)out;
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 #endif
@@ -157,13 +152,9 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 	u16 EnableMyDream = 0; //362
 	u16 DreamUploadPlayerHaveCreatorID = 0; //364
 
-	//removes the dream bed and gyroid on Plaza
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (346 * 2), &IsDreamingBed, sizeof(u16), FsWriteOption_Flush);
-	//should allow you to dream without introduction to it etc
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (354 * 2), &TapDreamEnable, sizeof(u16), FsWriteOption_Flush);
-	//removes link to dream town
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (362 * 2), &EnableMyDream, sizeof(u16), FsWriteOption_Flush);
-	//removes panel
 	fsFileWrite(&main, SaveHeaderSize + EventFlagOffset + (364 * 2), &DreamUploadPlayerHaveCreatorID, sizeof(u16), FsWriteOption_Flush);
 
 	//write AccountUID linkage (for Nintendo Switch Online)
@@ -216,13 +207,12 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 
 		std::string player = "/Villager" + std::to_string(i) + "/";
 #if DEBUG
-		*status = player.c_str();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		(*logelm)->addLine(player);
+
 #endif
 		std::string currentplayer = newdumppath + player;
 #if DEBUG
-		*status = currentplayer.c_str();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		(*logelm)->addLine(currentplayer);
 #endif
 		//disabling this due to issues with NetPlayInfo on per-player basis
 		//copy the original villager for the existing villagers
@@ -263,16 +253,25 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		}
 		(*logelm)->addLine("wrote player " + std::to_string(i + 1) + ".");
 
-		//applying fix for pocket size
 		*status = "applying fixes to player...";
 		u8 houselvl = 0;
-		u16 BuiltTownOffice = 0;
+		u16 BuiltTownOffice = 0; //59
+		u16 UpgradePocket30 = 0; //669
+		u16 UpgradePocket40 = 0; //670
+		u16 SellPocket40 = 0; //672
+		u8 ReceivedItemPocket30; //9052
+		u8 ReceivedItemPocket40; //11140
+		u8 ExpandBaggage = 0;
 		//using default sizes
 		u32 storageSize = 80;
-		u32 pocket2Size = 0;
+		u32 pocket1Size = 0;
 
 		dmntchtReadCheatProcessMemory(mainAddr + houseLvlOffset + (i * houseSize), &houselvl, sizeof(u8));
 		dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (59 * 2), &BuiltTownOffice, sizeof(u16));
+		dmntchtReadCheatProcessMemory(playerAddr + (i * playersOffset) + EventFlagsPlayerOffset + (669 * 2), &UpgradePocket30, sizeof(u16));
+		dmntchtReadCheatProcessMemory(playerAddr + (i * playersOffset) + EventFlagsPlayerOffset + (670 * 2), &UpgradePocket40, sizeof(u16));
+		dmntchtReadCheatProcessMemory(playerAddr + (i * playersOffset) + PlayerOtherOffset + ItemCollectBitOffset + (0x235C / 8), &ReceivedItemPocket30, sizeof(u8));
+		dmntchtReadCheatProcessMemory(playerAddr + (i * playersOffset) + PlayerOtherOffset + ItemCollectBitOffset + (0x2B84 / 8), &ReceivedItemPocket40, sizeof(u8));
 
 		switch (houselvl) {
 			//no need to change defaults
@@ -292,14 +291,36 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 			case 8: storageSize = 2400;
 					break;
 		}
-		//those are just assumptions; the pocket upgrades are available at those points tho, so most people got them
-		if (houselvl > 0x1) {
-			pocket2Size += 0xA;
-			if (BuiltTownOffice == 0x1) pocket2Size += 0xA;
+
+		if (UpgradePocket30 == 1) {
+			pocket1Size += 0xA;
+			ExpandBaggage = 0x01;
+			ReceivedItemPocket30 |= (1 << 4);
+			SellPocket40 = 1;
+			if (UpgradePocket40 == 1) {
+				pocket1Size += 0xA;
+				ReceivedItemPocket40 |= (1 << 4);
+				ExpandBaggage = 0x02;
+			}
+			else if (((ReceivedItemPocket40 >> 4) & 1) == 1) ReceivedItemPocket40 ^= (1 << 4);
 		}
+		else if (((ReceivedItemPocket30 >> 4) & 1) == 1) ReceivedItemPocket30 ^= (1 << 4);
+
+#if DEBUG
+		(*logelm)->addLine("SellPocket40: " + std::to_string(SellPocket40));
+		(*logelm)->addLine("UpgradePocket30: " + std::to_string(UpgradePocket30));
+		(*logelm)->addLine("UpgradePocket40: " + std::to_string(UpgradePocket40));
+		(*logelm)->addLine("ReceivedItemPocket30: " + std::to_string(((ReceivedItemPocket30 >> 4) & 1)));
+		(*logelm)->addLine("ReceivedItemPocket40: " + std::to_string(((ReceivedItemPocket40 >> 4) & 1)));
+		(*logelm)->addLine("ExpandBaggage: " + std::to_string(ExpandBaggage));
+#endif
 
 		fsFileWrite(&personal, StorageSizeOffset, &storageSize, sizeof(u32), FsWriteOption_Flush);
-		fsFileWrite(&personal, Pocket2SizeOffset, &pocket2Size, sizeof(u32), FsWriteOption_Flush);
+		fsFileWrite(&personal, Pocket1SizeOffset, &pocket1Size, sizeof(u32), FsWriteOption_Flush);
+		fsFileWrite(&personal, ExpandBaggageOffset, &ExpandBaggage, sizeof(u8), FsWriteOption_Flush);
+		fsFileWrite(&personal, SaveHeaderSize + EventFlagsPlayerOffset + (672 * 2), &SellPocket40, sizeof(u16), FsWriteOption_Flush);
+		fsFileWrite(&personal, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x235C / 8), &ReceivedItemPocket30, sizeof(u8), FsWriteOption_Flush);
+		fsFileWrite(&personal, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x2B84 / 8), &ReceivedItemPocket40, sizeof(u8), FsWriteOption_Flush);
 
 		fsFileClose(&personal);
 		(*logelm)->addLine("applied fixes to player " + std::to_string(i + 1) + ".");

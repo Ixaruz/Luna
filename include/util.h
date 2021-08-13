@@ -24,8 +24,12 @@ extern const u64 playersOffset;
 
 //taken from NHSE
 extern const u64 PersonalID;
+extern const u64 EventFlagsPlayerOffset;
+extern const u64 PlayerOtherOffset;
+extern const u64 ItemCollectBitOffset;
 extern const u64 StorageSizeOffset;
-extern const u64 Pocket2SizeOffset;
+extern const u64 Pocket1SizeOffset;
+extern const u64 ExpandBaggageOffset;
 
 extern const u64 houseSize;
 extern const u64 houseLvlOffset;
