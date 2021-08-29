@@ -57,6 +57,12 @@ namespace util
 
     u64 FollowPointerMain(u64 pointer, ...);
 
+    bool getFlag(unsigned char data[], int bitIndex);
+
+    void setBitBequalsA(u16 arrA[], int arrlen, unsigned char* B, int bitIndexOffset);
+
+    void setBitBequalsA(u16 A, unsigned char* B, int bitIndexOffset);
+
     std::string GetLastTimeSaved(u64 mainAddr);
 }
 #endif // UTIL_H

@@ -142,6 +142,24 @@ u64 util::FollowPointerMain(u64 pointer, ...)
 	return offset;
 }
 
+bool util::getFlag(unsigned char data[], int bitIndex)
+{
+	unsigned char b = data[bitIndex >> 3];
+	unsigned char mask = 1 << (bitIndex & 7);
+	return (b & mask) != 0;
+}
+
+void util::setBitBequalsA(u16 arrA[], int arrlen, unsigned char* B, int bitIndexOffset) {
+	for (int i = 0; i < arrlen; i++) {
+		if ((arrA[i] == 1) != (util::getFlag(B, bitIndexOffset + i))) {
+			B[(bitIndexOffset + i) >> 3] ^= (1 << ((i + bitIndexOffset) & 7));
+		}
+	}
+}
+
+void util::setBitBequalsA(u16 A, unsigned char* B, int bitIndexOffset) {
+	if ((A == 1) != (util::getFlag(B, bitIndexOffset))) B[bitIndexOffset >> 3] ^= (1 << (bitIndexOffset & 7));
+}
 
 std::string util::GetLastTimeSaved(u64 mainAddr)
 {
