@@ -129,7 +129,7 @@ u64 util::FollowPointerMain(u64 pointer, ...)
 	dmntchtGetCheatProcessMetadata(&metadata);
 
 	size_t bufferSize = sizeof offset;
-	dmntchtReadCheatProcessMemory(metadata.main_nso_extents.base + pointer, &offset, bufferSize); // since the inital pointer will be a valid offset(we assumme anyways...) do a read64 call to it and store in offset
+	dmntchtReadCheatProcessMemory(metadata.main_nso_extents.base + pointer, &offset, bufferSize); // since the inital pointer will be a valid offset(we assume anyways...) do a read64 call to it and store in offset
 	//return 0xFFFFFFFFFFFFFFFF;
 	pointer = va_arg(pointers, u64); // go to next argument
 	while (pointer != 0xFFFFFFFFFFFFFFFF) // the last arg needs to be -1 in order for the while loop to exit

@@ -267,31 +267,39 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		*status = "applying fixes to player...";
 		u8 houselvl = 0;
 		u16 BuiltTownOffice = 0; //59
-		u16 GetLicenseGrdMydesign; //644
-		u16 UpgradePocket30 = 0; //669
-		u16 UpgradePocket40 = 0; //670
-		u16 SellPocket40 = 0; //672
-		u8 HairStyles[sizeof(u8)]; //9049 - 9051
-		u8 PermitsandLicenses[sizeof(u16)]; //8773 - 8781
-		u8 CustomDesignPathPermit[sizeof(u8)]; //9771
-		u8 ReceivedItemPocket30; //9052
-		u8 ReceivedItemPocket40; //11140
-		u8 ExpandBaggage = 0;
+
 		//using default sizes
 		u32 storageSize = 80;
 		u32 pocket1Size = 0;
 
+		u8 ReceivedItemPocket30; //9052
+		u8 ReceivedItemPocket40; //11140
+		u8 ExpandBaggage = 0;
+
+		u16 UpgradePocket30 = 0; //669
+		u16 UpgradePocket40 = 0; //670
+		u16 SellPocket40 = 0; //672
+
+		u8 HairStyles[sizeof(u8)]; //9049 - 9051
+		u8 StylishHairStyles[sizeof(u8)]; //13767
+		u8 PermitsandLicenses[sizeof(u16)]; //8773 - 8781
+		u8 CustomDesignPathPermit[sizeof(u8)]; //9771
+
 		u16 HairStyleColor[3] = { 0 };
+		u16 AddHairStyle4; //1219
 		u16 GetLicenses[9] = { 0 };
+		u16 GetLicenseGrdMydesign; //644
 
 		dmntchtReadCheatProcessMemory(mainAddr + houseLvlOffset + (i * houseSize), &houselvl, sizeof(u8));
 		dmntchtReadCheatProcessMemory(mainAddr + EventFlagOffset + (59 * 2), &BuiltTownOffice, sizeof(u16));
 
 		dmntchtReadCheatProcessMemory(playerAddr + (i * playersOffset) + EventFlagsPlayerOffset + (559 * 2), &HairStyleColor, sizeof(HairStyleColor));
+		dmntchtReadCheatProcessMemory(playerAddr + (i * playersOffset) + EventFlagsPlayerOffset + (1219 * 2), &AddHairStyle4, sizeof(u16));
 		dmntchtReadCheatProcessMemory(playerAddr + (i * playersOffset) + EventFlagsPlayerOffset + (565 * 2), &GetLicenses,sizeof(GetLicenses));
 		dmntchtReadCheatProcessMemory(playerAddr + (i * playersOffset) + EventFlagsPlayerOffset + (644 * 2), &GetLicenseGrdMydesign, sizeof(GetLicenseGrdMydesign));
 
 		fsFileRead(&personaltemp, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x2359 / 8), HairStyles, sizeof(u8), FsReadOption_None, &bytesread);
+		fsFileRead(&personaltemp, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x35C6 / 8), StylishHairStyles, sizeof(u8), FsReadOption_None, &bytesread);
 		fsFileRead(&personaltemp, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x2245 / 8), PermitsandLicenses, sizeof(u16), FsReadOption_None, &bytesread);
 		fsFileRead(&personaltemp, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x262B / 8), CustomDesignPathPermit, sizeof(u8), FsReadOption_None, &bytesread);
 
@@ -320,19 +328,11 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 			case 8: storageSize = 2400;
 					break;
 		}
-		/*
-		for (u8 i = 0; i < (sizeof(HairStyleColor)/sizeof(HairStyleColor[0])); i++) {
-			if ((HairStyleColor[i] == 1) != (((HairStyles >> (i + 1)) & 1) == 1)) HairStyles ^= (1 << (1 + i));
-		}
-		for (u8 i = 0; i < (sizeof(GetLicenses) / sizeof(GetLicenses[0])); i++) {
-			if ((GetLicenses[i] == 1) != (((PermitsandLicenses >> (i + 5)) & 1) == 1)) PermitsandLicenses ^= (1 << (5 + i));
-		}
-		if ((GetLicenseGrdMydesign == 1) != (((CustomDesignPathPermit >> 3) & 1) == 1)) CustomDesignPathPermit ^= (1 << 3);
-		*/
-
-		util::setBitBequalsA(HairStyleColor, sizeof(HairStyleColor) / sizeof(HairStyleColor[0]), HairStyles, 1);
-		util::setBitBequalsA(GetLicenses, sizeof(GetLicenses) / sizeof(GetLicenses[0]), PermitsandLicenses, 5);
-		util::setBitBequalsA(GetLicenseGrdMydesign, CustomDesignPathPermit, 3);
+		//0xXXXX modulo 8 is our bit offset in the byte(s).
+		util::setBitBequalsA(HairStyleColor, sizeof(HairStyleColor) / sizeof(HairStyleColor[0]), HairStyles,	0x2359 % 8);
+		util::setBitBequalsA(AddHairStyle4, StylishHairStyles,													0x35C6 % 8);
+		util::setBitBequalsA(GetLicenses, sizeof(GetLicenses) / sizeof(GetLicenses[0]), PermitsandLicenses,		0x2245 % 8);
+		util::setBitBequalsA(GetLicenseGrdMydesign, CustomDesignPathPermit,										0x262B % 8);
 
 		//overlapping byte
 		ReceivedItemPocket30 = HairStyles[0];
@@ -354,7 +354,9 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 		(*logelm)->addLine("AddHairStyle1: " + std::to_string(HairStyleColor[0]));
 		(*logelm)->addLine("AddHairStyle2: " + std::to_string(HairStyleColor[1]));
 		(*logelm)->addLine("AddHairStyle3: " + std::to_string(HairStyleColor[2]));
-		(*logelm)->addLine("HairStyles: " + std::to_string(HairStyles[0] >> 1));
+		(*logelm)->addLine("HairStyles: " + std::to_string((HairStyles[0] >> 1) & 7));
+		(*logelm)->addLine("AddHairStyle4: " + std::to_string(AddHairStyle4));
+		(*logelm)->addLine("StylishHairStyles: " + std::to_string((StylishHairStyles[0] >> 6) & 1));
 
 		(*logelm)->addLine("GetLicenseGrdStone: " + std::to_string(GetLicenses[0]));
 		(*logelm)->addLine("GetLicenseGrdBrick: " + std::to_string(GetLicenses[1]));
@@ -381,6 +383,7 @@ void Dumper(u8* progress, const char** status, tsl::elm::Log** logelm) {
 #endif
 
 		fsFileWrite(&personal, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x2359 / 8), HairStyles, sizeof(u8), FsWriteOption_Flush);
+		fsFileWrite(&personal, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x35C6 / 8), StylishHairStyles, sizeof(u8), FsWriteOption_Flush);
 		fsFileWrite(&personal, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x2245 / 8), PermitsandLicenses, sizeof(u16), FsWriteOption_Flush);
 		fsFileWrite(&personal, SaveHeaderSize + PlayerOtherOffset + ItemCollectBitOffset + (0x262B / 8), CustomDesignPathPermit, sizeof(u8), FsWriteOption_Flush);
 

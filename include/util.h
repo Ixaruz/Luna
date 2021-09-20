@@ -42,8 +42,6 @@ struct IslandName {
 namespace util
 {
 
-    std::string safeString(const std::string& s);
-
     //removes char from C++ string
     void stripChar(char _c, std::string& _s);
 
